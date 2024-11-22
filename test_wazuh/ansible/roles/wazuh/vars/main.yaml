@@ -1,0 +1,7 @@
+wazuh_repo_url: "https://github.com/wazuh/wazuh-docker.git"
+wazuh_version: "4.9.2"
+wazuh_dir: "/opt/wazuh"
+wazuh_compose_file: "docker-compose.yml"
+# wazuh_webserver_port: 9002
+# wazuh_access_port: 9102
+# wazuh_gms_port: 8181 # avoid 8080 is being used by airflow

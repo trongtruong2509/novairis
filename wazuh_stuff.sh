@@ -88,3 +88,23 @@ wazuh-agentlessd: INFO: ssh_integrity_check_linux: user@example_adress.com: Fini
 
 4. check logs in web dashboard
 https://documentation.wazuh.com/current/user-manual/capabilities/agentless-monitoring/visualization.html
+
+
+5. aws config
+<wodle name="aws-s3">
+  <disabled>no</disabled>
+  <interval>5m</interval>
+  <run_on_start>yes</run_on_start>
+  <service type="cloudwatchlogs">
+    <aws_profile>default</aws_profile>
+    <aws_log_groups>/ecs/auth</aws_log_groups>
+    <only_logs_after>2022-JAN-01</only_logs_after>
+    <regions>ap-south-1</regions>
+  </service>
+</wodle>
+
+
+# describe logs
+aws logs describe-log-streams --log-group-name "/aws/lambda/function_ecs_alerts_up_down"
+
+aws logs get-log-events --log-group-name "/aws/lambda/function_ecs_alerts_up_down" --log-stream-name "2024/11/24/[$LATEST]014e986570be40ed8ebe653d70274eaf"

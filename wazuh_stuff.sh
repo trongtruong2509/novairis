@@ -234,8 +234,18 @@ aws logs get-log-events --log-group-name "/aws/lambda/function_ecs_alerts_up_dow
 
 # delete alert indexes
 # https://groups.google.com/g/wazuh/c/Jo8ldO6Cwo4
+# How to see your indices list:
+curl -u admin:SecretPassword https://3.109.128.149:9200/_cat/indices/wazuh-alerts* -k
 curl -u admin:SecretPassword -XDELETE https://192.168.1.30:9200/wazuh-alerts-4.x-2024.12.07 -k
 
 # refresh field indexes
 https://groups.google.com/g/wazuh/c/hfgJPJj9wJY
 
+# logtest
+/var/ossec/bin/wazuh-logtest
+
+
+# queue
+https://documentation.wazuh.com/current/user-manual/agent/agent-management/antiflooding.html
+https://groups.google.com/g/wazuh/c/czB6W8mDbFM
+https://www.reddit.com/r/Wazuh/comments/1e65yc8/wazuh_agent_queue_flooded/

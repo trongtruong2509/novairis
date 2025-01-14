@@ -1,0 +1,13 @@
+services:
+  sftp:
+    image: "drakkan/sftpgo:2.6.x"
+    container_name: "sftp_container"
+    ports:
+      - "2022:2022"
+      - "2024:8080"
+    networks:
+      - "sftp-network"
+
+networks:
+  "sftp-network":
+    driver: bridge

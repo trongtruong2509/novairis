@@ -33,3 +33,15 @@ ssh-add -l &>/dev/null || ssh-add ~/.ssh/do_ansible_key
 
 # change group
 sudo chown $(whoami):$(whoami) docker-compose.yml
+
+# find files with given name
+sudo find / -type f -name "filename"
+
+# see uid
+ id -u <username>
+
+# basic check
+nc -zv <IP> <port>
+
+# check with ssl
+openssl s_client -connect 139.59.237.252:10001

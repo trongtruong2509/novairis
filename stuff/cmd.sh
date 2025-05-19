@@ -1,3 +1,7 @@
+# determine init system
+ps -p 1
+
+
 
 # nginx access and error logs file
 

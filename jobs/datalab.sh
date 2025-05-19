@@ -58,3 +58,33 @@ upload file to pieter1
 
 
   https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.27/mysql-connector-java-8.0.27.jar
+
+
+docker exec -it delta_test-spark-thrift-1 beeline -u jdbc:hive2://localhost:10000
+
+CREATE DATABASE deltadb;
+USE deltadb;
+CREATE TABLE test_table (id INT, name STRING) USING delta LOCATION 's3a://warehouse/deltadb/test_table';
+INSERT INTO test_table VALUES (1, 'test');
+SELECT * FROM test_table;
+
+
+spark.sql("SHOW DATABASES").show()
+spark.sql("SHOW TABLES IN deltadb").show()
+
+spark.sql("SELECT * FROM `temp_covid`").show()
+
+# datahub config for ingestion delta lake (minio/s3)
+source:
+    type: delta-lake
+    config:
+        base_path: 's3a://processed-data/covid-data'
+        s3:
+            aws_config:
+                aws_access_key_id: pieter
+                aws_secret_access_key: Testpass2024
+                aws_endpoint_url: 'http://172.17.0.1:9000'
+sink:
+    type: datahub-rest
+    config:
+        server: 'http://datahub-gms:8080'

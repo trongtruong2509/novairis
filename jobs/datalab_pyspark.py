@@ -33,7 +33,7 @@ def get_stream_data_path(bucket_name, stream_name):
         for obj in response['Contents']:
             file_name = obj['Key'].split('/')[-1]  # Get the file name
             if file_pattern.match(file_name):
-                data_path = file_name
+                data_path = f"s3a://{bucket_name}/{stream_name}/{file_name}"
                 print(f"Matched file: {file_name}")
                 # Do something with the file, e.g., process it or download it
                 break
@@ -78,12 +78,9 @@ def transform_airbyte_to_delta(input_path, delta_table_path):
     cleaned_df = df.withColumn("_airbyte_data", regexp_replace("_airbyte_data", "\\\\\"", "\""))
     
     # Parse the JSON data and explode into columns
+    # Note: We're not selecting the Airbyte columns here
     parsed_df = cleaned_df.withColumn("parsed_data", from_json(col("_airbyte_data"), json_schema)) \
-        .select(
-            col("_airbyte_ab_id"),
-            from_unixtime(col("_airbyte_emitted_at") / 1000).alias("emitted_at"),
-            col("parsed_data.*")
-        )
+        .select("parsed_data.*")  # Only select the actual data columns
     
     # Convert numeric strings to appropriate types
     final_df = parsed_df \
@@ -106,27 +103,49 @@ def transform_airbyte_to_delta(input_path, delta_table_path):
     print("\nFinal Data:")
     final_df.show(2, truncate=False)
     
-    # Write to Delta Lake format with S3 specific configurations
+    # final_df.write.format("delta").mode("overwrite").save(delta_table_path)
+    
+    spark.sql(f"""
+        CREATE DATABASE IF NOT EXISTS deltadb
+        LOCATION '{delta_table_path}/deltadb.db'
+        """)
+    
+    # Drop the existing table if it exists
+    spark.sql("DROP TABLE IF EXISTS deltadb.test_covid")
+    
+    # First, write the data as a managed table
     final_df.write \
         .format("delta") \
         .mode("overwrite") \
         .option("overwriteSchema", "true") \
-        .save(delta_table_path)
+        .saveAsTable("deltadb.test_covid")
     
-    # Create Delta table if it doesn't exist
-    spark.sql(f"""
-        CREATE TABLE IF NOT EXISTS covid_cases 
-        USING DELTA 
-        LOCATION '{delta_table_path}'
-    """)
+    # final_df.write \
+    #     .format("delta") \
+    #     .mode("overwrite") \
+    #     .option("overwriteSchema", "true") \
+    #     .save(delta_table_path)
 
     return final_df
 
 # Example usage
-input_path = "s3a://test-raw/12-01-2020.csv/2025_01_13_1736776639724_0.csv"
+bucket_name="test-raw"
+stream_name="12-01-2020.csv"
+input_path = get_stream_data_path(bucket_name, stream_name)
 processed_data_path = "s3a://processed-data/covid-data"
 
 df = transform_airbyte_to_delta(input_path, processed_data_path)
 
 # Optional: Show the first few rows of transformed data
 df.show(5, truncate=False)
+
+
+
+
+
+spark.sql("create table deltadb.covid_data using delta location 's3a://processed-data/covid-data'")
+
+spark.sql('use deltadb')
+spark.sql('show tables').show()
+
+spark.sql('select * from covid_data').show()

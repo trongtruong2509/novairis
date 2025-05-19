@@ -1,5 +1,5 @@
 # ping all hosts
-ansible-playbook all -m ping
+ansible all -m ping
 
 # inventory yaml example
 all:

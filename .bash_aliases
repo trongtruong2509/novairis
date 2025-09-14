@@ -25,6 +25,20 @@ alias tfw="terraform workspace"
 alias tfws="terraform workspace show"
 alias tfwl="terraform workspace list"
 
+
+# ===============================================================================
+# TERRAFORM ALIASES WITH MAKE
+# ===============================================================================
+
+alias mi="make init"
+alias mp="make plan"
+alias mapp="make apply"
+alias mdes="make destroy"
+alias mv="make validate"
+alias mf="make fmt"
+alias mshow="make show"
+alias mout="make output"
+
 # ===============================================================================
 # TERRAGRUNT ALIASES
 # ===============================================================================
@@ -213,3 +227,7 @@ alias dp="docker ps"
 alias dc="docker compose"
 alias dcup="docker compose up -d"
 alias dcdown="docker compose down"
+
+# Claude Code
+alias cc="claude"
+alias ccd="claude --dangerously-skip-permissions"
